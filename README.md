@@ -3,6 +3,8 @@ This is a test repo for verifying the behavior of IPC mechanisms (both on linux 
 
 It includes source code for example producer/consumers of Unix domain sockets, as well as dockerfiles for producing container images.
 
+## Examples
 Example clients are controlled in their respective directories:
-* c
-* python
+* c: Example of producer/consumer communications using mq.
+* python: Example of producer/consumer communications using Unix Domain Socket. 
+  * Note: This requires a shared volume mount between the producer and consumer.
