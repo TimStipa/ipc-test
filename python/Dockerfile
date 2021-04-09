@@ -1,4 +1,5 @@
 FROM ubuntu:latest
-COPY . /test/ipc
-WORKDIR /test/ipc
-ENTRYPOINT ["python3 ipc-test.py"]
+RUN apt-get update -y \
+    && apt-get install -y python3
+COPY . /app/
+ENTRYPOINT ["python3", "/app/ipc-test.py"]
