@@ -5,7 +5,11 @@ import sys
 import time
 
 # Address for Unix Domain Socket
-SOCKET_ADDRESS = './ipc_test'
+#
+# Note: This assumes the path will exist. For k8s testing,
+#       this is being provided through a shared volume mount
+#       to allow consumers and producers to access it.
+SOCKET_ADDRESS = '/ipc_test/test_socket'
 
 def parseArgs():
     parser = argparse.ArgumentParser()
