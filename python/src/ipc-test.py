@@ -11,6 +11,18 @@ import time
 #       to allow consumers and producers to access it.
 SOCKET_ADDRESS = '/ipc_test/test_socket'
 
+def main(args):
+    if args.consumer and args.producer:
+        flushWrite("Invalid arguments. Cannot be both producer and consumer.")
+        exit(1)
+    if args.consumer:
+        consumer()
+    elif args.producer:
+        producer(args.num_messages)
+    else:
+        flushWrite("No argument specified")
+        exit(1)
+
 def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -29,36 +41,29 @@ def parseArgs():
     return parser.parse_args()
 
 def consumer():
-    print("Consumer: Running as consumer")
+    flushWrite("Consumer: Running as consumer")
 
     # Connect to the socket established by the producer and wait for data
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     sock.connect(SOCKET_ADDRESS)
     try:
-        print("Consumer: Connected to Producer")
+        flushWrite("Consumer: Connected to Producer")
         flag = True
         while flag:
             data = sock.recv(1024).decode()
-            print("Consumer: Received message = {}".format(data))
+            flushWrite("Consumer: Received message = {}".format(data))
             if data == 'Exit':
                 flag = False;
             time.sleep(1)
     finally:
-        print("Consumer: Closing socket")
+        flushWrite("Consumer: Closing socket")
         sock.close()
         
 
-def unbindSocket():
-    try:
-        os.unlink(SOCKET_ADDRESS)
-    except OSError:
-        if os.path.exists(SOCKET_ADDRESS):
-            raise
-
 def producer(messages):
-    print("Producer: Running as producer")
+    flushWrite("Producer: Running as producer")
     if messages is None:
-        print("Producer: Num messages was not set. Aborting.");
+        flushWrite("Producer: Num messages was not set. Aborting.");
         exit(1)
    
     # Ensure socket is not already in use
@@ -71,13 +76,13 @@ def producer(messages):
 
     completed = True;
     while completed:
-        print("Producer: Waiting for client...")
+        flushWrite("Producer: Waiting for client...")
         connection, client = sock.accept()
 
         # Once a connection is established, send the specified number of messages.
         # These messages will be sent at 5 second intervals.
         try:
-            print("Producer: Found client")
+            flushWrite("Producer: Found client")
             for x in range(messages):
                 tmp_message = 'Sending Message: {}'.format(x)
                 connection.send(tmp_message.encode('utf-8'))
@@ -85,23 +90,18 @@ def producer(messages):
             connection.send('Exit'.encode('utf-8'))
             completed = False
         finally:
-            print("Producer: Closing connection")
+            flushWrite("Producer: Closing connection")
             connection.close()
 
+def unbindSocket():
+    try:
+        os.unlink(SOCKET_ADDRESS)
+    except OSError:
+        if os.path.exists(SOCKET_ADDRESS):
+            raise
 
-
-def main(args):
-    if args.consumer and args.producer:
-        print("Invalid arguments. Cannot be both producer and consumer.")
-        exit(1)
-    if args.consumer:
-        consumer()
-    elif args.producer:
-        producer(args.num_messages)
-    else:
-        print("No argument specified")
-        exit(1)
-
+def flushWrite(message):
+    print(message, flush=True)
 
 if __name__ == "__main__":
     main(parseArgs());
