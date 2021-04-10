@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ipc_test-python-deployment
+  name: ipc-test-python-deployment
   labels:
-    app: ipc_test-python
+    app: ipc-test-python
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ipc_test-python
+      app: ipc-test-python
   template:
     metadata:
       labels:
-        app: ipc_test-python
+        app: ipc-test-python
     spec:
       volumes:
       - name: shared-socket
@@ -32,4 +32,3 @@ spec:
         volumeMounts:
         - name: shared-socket        
           mountPath: /ipc_test
-      restartPolicy: Never  
