@@ -4,21 +4,21 @@ metadata:
   name: ipc-python
 spec:
   volumes:
-  - name: shared-socket
+  - name: {{ .Values.volume.name }}
     emptyDir: {}
   containers: 
   - name: producer
     image: tstipa/ipc-test-python
-    command: ['python3']
-    args: ['/app/ipc-test.py', '--producer', '--num_messages', '10']
+    command: ["python3"]
+    args: ["/app/ipc-test.py", "--producer", "--num_messages", {{ .Values.producer.numMessages | quote }}]
     volumeMounts:
-    - name: shared-socket        
+    - name: {{ .Values.volume.name }}        
       mountPath: /ipc_test
   - name: consumer
     image: tstipa/ipc-test-python
-    command: ['python3']
-    args: ['/app/ipc-test.py', '--consumer']
+    command: ["python3"]
+    args: ["/app/ipc-test.py", "--consumer"]
     volumeMounts:
-    - name: shared-socket        
-      mountPath: /ipc_test
+    - name: {{ .Values.volume.name }}
+      mountPath: {{ .Values.volume.mountPath }}
   restartPolicy: Never  
